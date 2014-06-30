@@ -216,9 +216,9 @@ class Table
 	}
 
 	public function cache_key_for_model($pk){
-		if(!is_array($pk)){
-			$pk = array($pk);
-		}
+        if(!is_array($pk)){
+            $pk = array($pk);
+        }
 		return $this->class->name."-".implode("-",$pk);
 	}
 

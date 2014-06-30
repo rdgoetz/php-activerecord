@@ -877,17 +877,17 @@ class Model
 		return true;
 	}
 
-	protected function update_cache(){
-		$table = static::table();
-		if($table->cache_model){
-			Cache::set($this->cache_key(), $this, 0);
-		}
-	}
+    protected function update_cache(){
+        $table = static::table();
+        if($table->cache_model){
+            Cache::set($this->cache_key(), $this, 0);
+        }
+    }
 
-	protected function cache_key(){
-		$table = static::Table();
-		return $table->cache_key_for_model($this->values_for_pk());
-	}
+    protected function cache_key(){
+        $table = static::Table();
+        return $table->cache_key_for_model($this->values_for_pk());
+    }
 
 	/**
 	 * Deletes records matching conditions in $options
@@ -1024,10 +1024,11 @@ class Model
 
 		static::table()->delete($pk);
 		$this->invoke_callback('after_destroy',false);
-		$this->remove_from_cache();
+        $this->remove_from_cache();
 
 		return true;
 	}
+
 
 	public function remove_from_cache(){
 		$table = static::table();
@@ -1272,6 +1273,7 @@ class Model
 		$this->remove_from_cache();
 
 		$this->__relationships = array();
+
 		$pk = array_values($this->get_values_for($this->get_primary_key()));
 
 		$this->set_attributes_via_mass_assignment($this->find($pk)->attributes, false);
@@ -1613,23 +1615,23 @@ class Model
 	 */
 	public static function find_by_pk($values, $options)
 	{
-		$table = static::table();
+        $table = static::table();
 
-		if($table->cache_model){
-			$pks=is_array($values)?$values:array($values);
-			foreach($pks as $pk){
-				$options['conditions'] = static::pk_conditions($pk);
-				$list[] = Cache::get($table->cache_key_for_model($pk), function() use ($table, $options){
-					$res = $table->find($options);
-					return $res?$res[0]:null;
-				});
-			}
-			$list = array_filter($list);
-		}
-		else{
-			$options['conditions'] = static::pk_conditions($values);
-			$list = $table->find($options);
-		}
+        if($table->cache_model){
+            $pks=is_array($values)?$values:array($values);
+            foreach($pks as $pk){
+                $options['conditions'] = static::pk_conditions($pk);
+                $list[] = Cache::get($table->cache_key_for_model($pk), function() use ($table, $options){
+                    $res = $table->find($options);
+                    return $res?$res[0]:null;
+                });
+            }
+            $list = array_filter($list);
+        }
+        else{
+            $options['conditions'] = static::pk_conditions($values);
+    		$list = $table->find($options);
+        }
 		$results = count($list);
 
 		if ($results != ($expected = count($values)))
